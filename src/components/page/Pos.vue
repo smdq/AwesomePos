@@ -1,10 +1,10 @@
 <template>
   <div class="pos">
-    <i class="icon iconfont icon-gongnengjianyi"></i>
+    <!-- <i class="icon iconfont icon-gongnengjianyi"></i>
     <i class="icon iconfont icon-hanbao"></i>
     <i class="icon iconfont icon-jisutuikuan"></i>
 
-    Hello AwesomePos Demo.
+    Hello AwesomePos Demo. -->
   </div>
 </template>
 
