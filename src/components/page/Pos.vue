@@ -11,10 +11,13 @@
               <el-table-column  label="操作" width="100" fixed="right">
                   <template scope="scope">
                       <el-button type="text" size="small">删除</el-button>
-                      <el-button type="text" size="small">增加</el-button>
+                      <el-button type="text" size="small" @click="addOrderList(scope.row)">增加</el-button>
                   </template>
               </el-table-column>
           </el-table> 
+          <div class="totalDiv">
+           <small> 数量：{{totalCount}}</small> &nbsp;&nbsp;&nbsp;&nbsp;<small> 金额: {{totalMoney}} 元</small>
+          </div>
           <div class="div-btn">
            <el-button type="warning" >挂单</el-button>
             <el-button type="danger" >删除</el-button>
@@ -34,7 +37,7 @@
          <div class="title">常用商品</div>
           <div class="often-goods-list">
             <ul>
-              <li v-for="(goods,index) in oftenGoods" :key='index'>
+              <li v-for="(goods,index) in oftenGoods" :key='index' @click="addOrderList(goods)">
                 <span>{{goods.goodsName}}</span>
                 <span class="o-price">{{goods.price}}元</span>
               </li>
@@ -46,7 +49,7 @@
            <el-tab-pane label="汉堡">
              <div>
                <ul class="cookList">
-                  <li v-for="(goods,index) in type0Goods" :key="index">
+                  <li v-for="(goods,index) in type0Goods" :key="index" @click="addOrderList(goods)">
                     <span class="foodImg"><img :src="goods.goodsImg" width="100%"></span>
                     <span class="foodName">{{goods.goodsName}}</span>
                     <span class="foodPrice">￥{{goods.price}}元</span>
@@ -100,6 +103,8 @@ export default {
   name: 'Pos',
   data(){
     return {
+      totalMoney:0,
+      totalCount:0,
       tableData: [
         // {
         //   goodsName: '可口可乐',
@@ -244,6 +249,40 @@ export default {
 var orderHeight = document.body.clientHeight;
 console.log(orderHeight);
 document.getElementById('order-list').style.height = orderHeight +'px'
+  },
+  methods:{
+    addOrderList(goods){
+      this.totalMoney =0;
+      this.totalCount =0;
+      //商品是否存在订单列表中
+        let isHave = false;
+        for(let i=0;i<this.tableData.length;i++){
+          
+           if(this.tableData[i].goodsId == goods.goodsId){
+             isHave = true;
+           }
+        }
+      //根据判断的值编写业务逻辑
+      if(isHave){
+        //改变列表商品的数量,如果该商品已经加入了  在继续加就根据id值筛选让其count数加1
+        let arr = this.tableData.filter(o =>o.goodsId==goods.goodsId);
+        arr[0].count++
+
+      }else{
+        let newGoods = {goodsId:goods.goodsId,
+                        goodsName:goods.goodsName,
+                        price:goods.price,
+                        count:1
+                       }
+      this.tableData.push(newGoods)
+
+      }
+    //计算数量和总金额
+      this.tableData.forEach((element)=>{
+        this.totalCount+=element.count;
+        this.totalMoney=this.totalMoney+(element.price*element.count)
+      })
+    }
   }
  
 }
@@ -264,6 +303,11 @@ document.getElementById('order-list').style.height = orderHeight +'px'
    background-color: #F9FAFC;
   padding:10px;
   text-align: left
+ }
+ .totalDiv{
+   background: #fff;
+   padding: 10px;
+   border-bottom: 1px solid #d3dce6;
  }
  .often-goods-list ul li{
    list-style:none;
@@ -301,7 +345,7 @@ document.getElementById('order-list').style.height = orderHeight +'px'
        width: 40%;
    }
    .foodName{
-       font-size: 18px;
+       font-size: 16px;
        padding-left: 10px;
        color:brown;
    }
